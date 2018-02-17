@@ -64,7 +64,6 @@ module.exports = {
 
     delete: (req, res) => {
         const id = req.params.id;
-        console.log("ondelete");
         TaskModel.findByIdAndRemove(id, (error, result) => {
             if(error) {
                 res.status(500).send({message: "Error while trying to delete task"});

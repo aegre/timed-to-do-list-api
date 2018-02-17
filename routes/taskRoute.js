@@ -8,8 +8,10 @@ const taskController = require("../controllers/taskController");
 const api = express.Router();
 
 //define routes
+api.get(`${constants.TASK_ROUTE}${constants.URL_PARAM_ID}`, taskController.get);
 api.get(constants.TASK_ROUTE, taskController.getAll);
 api.post(constants.TASK_ROUTE, taskController.post);
+api.put(`${constants.TASK_ROUTE}${constants.URL_PARAM_ID}`, taskController.put);
 
 //export router
 module.exports = api;

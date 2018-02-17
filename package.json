@@ -1,0 +1,29 @@
+{
+  "name": "time-to-do-list-api",
+  "version": "1.0.0",
+  "description": "A rest API for the Timed To Do List Client",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aegre/timed-to-do-list-api.git"
+  },
+  "author": "Michell Alegría",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/aegre/timed-to-do-list-api/issues"
+  },
+  "homepage": "https://github.com/aegre/timed-to-do-list-api#readme",
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "express": "^4.16.2",
+    "mongoose": "^5.0.6",
+    "morgan": "^1.9.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.15.0"
+  }
+}

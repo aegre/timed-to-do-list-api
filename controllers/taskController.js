@@ -36,7 +36,7 @@ module.exports = {
         //save model
         task.save((error, result) => {
             if(error){
-                res.status(500).send({message: "Error while trying to create task"})
+                res.status(500).send({message: "Error while trying to create task"});
             }else{
                 res.status(200).send(result);
             }
@@ -46,6 +46,32 @@ module.exports = {
     //PUT API/TASK/:id
     put: (req, res) => {
         const id = req.params.id;
+        //Find and update the model, return th eupdated one
+        TaskModel.findByIdAndUpdate(id, req.body, {new: true}, (error, result) => {
+            if(error){
+                res.status(500).send({message: "Error while trying to update task"});
+            }
+            else{
+                if(!result) {
+                    res.status(404).send({message: "Task not found"});
+                }
+                else{
+                    res.status(200).send(result);
+                }
+            }
+        });
+    },
 
-    } 
+    delete: (req, res) => {
+        const id = req.params.id;
+        console.log("ondelete");
+        TaskModel.findByIdAndRemove(id, (error, result) => {
+            if(error) {
+                res.status(500).send({message: "Error while trying to delete task"});
+            }
+            else {
+                res.status(200).send(result);
+            }
+        });
+    }
 }

@@ -12,6 +12,7 @@ api.get(`${constants.TASK_ROUTE}${constants.URL_PARAM_ID}`, taskController.get);
 api.get(constants.TASK_ROUTE, taskController.getAll);
 api.post(constants.TASK_ROUTE, taskController.post);
 api.put(`${constants.TASK_ROUTE}${constants.URL_PARAM_ID}`, taskController.put);
+api.delete(`${constants.TASK_ROUTE}${constants.URL_PARAM_ID}`, taskController.delete);
 
 //export router
 module.exports = api;

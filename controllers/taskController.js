@@ -30,8 +30,16 @@ module.exports = {
     //POST API/TASK
     post: (req, res) => {
 
+        //Limit of minutes, we convert it to seconds 
+        if(req.body.duration && req.body.duration > 7200)
+        {
+            res.status(400).send({message: "El limite de minutos es 120 (7200 segundos)"});
+            return;
+        }
+        console.log(req.body);
+
         //Generate a task model with the params received in the body
-        const task = new TaskModel({ ... req.body });
+        const task = new TaskModel({ ... req.body, creationDate: Date.now() });
         
         //save model
         task.save((error, result) => {
@@ -62,6 +70,7 @@ module.exports = {
         });
     },
 
+    //DELETE API/TASK/:id
     delete: (req, res) => {
         const id = req.params.id;
         TaskModel.findByIdAndRemove(id, (error, result) => {

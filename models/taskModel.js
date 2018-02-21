@@ -4,13 +4,14 @@ const Schema = mongoose.Schema;
 
 //model definition
 const taskSchema = new Schema({
+    creationDate: { type: Date, default: Date.now()},
     description: { type: String, default: "" },
-    elapsed: { type: Number, default: 0 },
-    index: { type: Number, required: true },
-    status: { type: Number, default: 0 },
     duration: { type: Number, default: 0 },
-    creationDate: { type: Date, default: new Date()},
-    finishDate: { type: Date }
+    elapsed: { type: Number, default: 0 },
+    finishDate: { type: Date },
+    index: { type: Number },
+    status: { type: Number, default: 0 },
+    title: { type: String, required: true},
 });
 
 //model class

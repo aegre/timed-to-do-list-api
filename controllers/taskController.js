@@ -3,7 +3,7 @@ module.exports = {
     
     //GET API/TASK
     getAll: (req, res) => {
-        TaskModel.find({}, (error,result) => {
+        TaskModel.find({},(error,result) => {
             if(error){
                 res.status(500).send({message: "Error while trying to fetch list of tasks"});
             }
@@ -36,19 +36,29 @@ module.exports = {
             res.status(400).send({message: "El limite de minutos es 120 (7200 segundos)"});
             return;
         }
-        console.log(req.body);
-
-        //Generate a task model with the params received in the body
-        const task = new TaskModel({ ... req.body, creationDate: Date.now() });
-        
-        //save model
-        task.save((error, result) => {
-            if(error){
-                res.status(500).send({message: "Error while trying to create task"});
-            }else{
-                res.status(200).send(result);
+        //Get the max index 
+        TaskModel.findWithMaxIndex(
+            (error, result) => {
+                if(error){
+                    res.status(500).send({message: "Error while trying to create task"});
+                }
+                else{
+                    //Generate a task model with the params received in the body
+                    const newIndex = result && result.index != undefined ? result.index + 1 : 0;
+                    const task = new TaskModel({ ... req.body, creationDate: Date.now(), index: newIndex });
+                    //save model
+                    task.save((errorSave, resultSave) => {
+                        if(errorSave){
+                            res.status(500).send({message: "Error while trying to create task"});
+                        }else{
+                            res.status(200).send(resultSave);
+                        }
+                    });
+                    
+                }
             }
-        })
+        );
+        
     },
 
     //PUT API/TASK/:id

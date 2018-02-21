@@ -14,7 +14,14 @@ const taskSchema = new Schema({
     title: { type: String, required: true},
 });
 
+
+
 //model class
 const ModelClass = mongoose.model('task', taskSchema);
+
+ModelClass.findWithMaxIndex = function(cb) {
+    return ModelClass.findOne({ status: 0 }).sort("-index").exec(cb);
+};
+
 
 module.exports = ModelClass;

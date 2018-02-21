@@ -54,6 +54,12 @@ module.exports = {
     //PUT API/TASK/:id
     put: (req, res) => {
         const id = req.params.id;
+
+        //It's marked as completed
+        if(req.body.status && req.body.status === 1)
+        {
+            req.body.finishDate = Date.now();
+        }
         //Find and update the model, return th eupdated one
         TaskModel.findByIdAndUpdate(id, req.body, {new: true}, (error, result) => {
             if(error){

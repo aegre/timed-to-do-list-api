@@ -59,12 +59,12 @@ module.exports = {
         try {
             const currentTask = await TaskModel.findById(id);
             
-            //If the task has been accomplished set finish date
+            //If the task has been accomplished set finish date && decrease the following indexes
             if(currentTask.status == 0 && (updatedProps.status && updatedProps.status == 1))
             {
                 updatedProps = { ...updatedProps, finishDate: Date.now() };
+                await TaskModel.decreaseTheFollowingIndex(currentTask.index);
             }
-            console.log(updatedProps);
 
             //Find and update the model, return the updated one
             const result = await TaskModel.findByIdAndUpdate(id, updatedProps, { new: true });

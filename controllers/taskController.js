@@ -52,34 +52,33 @@ module.exports = {
     },
 
     //PUT API/TASK/:id
-    put: (req, res) => {
+    put: async (req, res) => {
         const id = req.params.id;
+        let updatedProps = {  ...req.body };
 
-        //It's marked as completed
-        if(req.body.status && req.body.status === 1)
-        {
-            req.body.finishDate = Date.now();
+        try {
+            const currentTask = await TaskModel.findById(id);
+            
+            //If the task has been accomplished set finish date
+            if(currentTask.status == 0 && (updatedProps.status && updatedProps.status == 1))
+            {
+                updatedProps = { ...updatedProps, finishDate: Date.now() };
+            }
+            console.log(updatedProps);
+
+            //Find and update the model, return the updated one
+            const result = await TaskModel.findByIdAndUpdate(id, updatedProps, { new: true });
+            res.status(200).send(result);   
         }
-        //Find and update the model, return th eupdated one
-        TaskModel.findByIdAndUpdate(id, req.body, {new: true}, (error, result) => {
-            if(error){
-                res.status(500).send({message: "Error while trying to update task"});
-            }
-            else{
-                if(!result) {
-                    res.status(404).send({message: "Task not found"});
-                }
-                else{
-                    res.status(200).send(result);
-                }
-            }
-        });
+        catch(err){
+            console.log(err);
+            res.status(500).send({message: "Error while trying to update task"});
+        }
     },
 
     //DELETE API/TASK/:id
     delete: async (req, res) => {
         const id = req.params.id;
-
         try {
             const currentTask = await TaskModel.findById(id);
             await TaskModel.decreaseTheFollowingIndex(currentTask.index);

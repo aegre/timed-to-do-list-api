@@ -2,43 +2,32 @@ const TaskModel = require("../models/TaskModel");
 module.exports = {
     
     //GET API/TASK
-    getAll: (req, res) => {
-        /*
-        TaskModel.update({}, { $inc: { status: 1} },{multi: true}, (error,result) => {
-            if(error){
-                res.status(500).send({message: "Error while trying to fetch list of tasks"});
-            }
-            else {
-                res.status(200).send(result);
-            }
-        });*/
-        
-        TaskModel.find({},(error,result) => {
-            if(error){
-                res.status(500).send({message: "Error while trying to fetch list of tasks"});
-            }
-            else {
-                res.status(200).send(result);
-            }
-        });
+    getAll: async (req, res) => {
+
+        try{
+            const tasks = await TaskModel.find({});
+            res.status(200).send(tasks);
+        } 
+        catch(err) {
+            res.status(500).send({message: "Error while trying to fetch list of tasks"});
+        }
     },
 
     //GET API/TASK/:id
-    get: (req, res) => {
+    get: async (req, res) => {
         const id = req.params.id;
-        TaskModel.findById(id, (error, result) => {
-            if(error) {
-                res.status(500).send({message: "Error while trying to fetch a task"})
-            }
-            else {
-                res.status(200).send(result);
-            }
-        });
 
+        try{
+            const currentTask = await TaskModel.findById(id);
+            res.status(200).send(currentTask);
+        }
+        catch(err) {
+            res.status(500).send({message: "Error while trying to fetch a task"});
+        }
     },
 
     //POST API/TASK
-    post: (req, res) => {
+    post: async (req, res) => {
 
         //Limit of minutes, we convert it to seconds 
         if(req.body.duration && req.body.duration > 7200)
@@ -46,29 +35,20 @@ module.exports = {
             res.status(400).send({message: "El limite de minutos es 120 (7200 segundos)"});
             return;
         }
-        //Get the max index 
-        TaskModel.findWithMaxIndex(
-            (error, result) => {
-                if(error){
-                    res.status(500).send({message: "Error while trying to create task"});
-                }
-                else{
-                    //Generate a task model with the params received in the body
-                    const newIndex = result && result.index != undefined ? result.index + 1 : 0;
-                    const task = new TaskModel({ ... req.body, creationDate: Date.now(), index: newIndex });
-                    //save model
-                    task.save((errorSave, resultSave) => {
-                        if(errorSave){
-                            res.status(500).send({message: "Error while trying to create task"});
-                        }else{
-                            res.status(200).send(resultSave);
-                        }
-                    });
-                    
-                }
-            }
-        );
         
+        try {
+            const newIndex = await TaskModel.getMaxIndex() + 1;
+            //Generate a task model with all the parameters
+            const task = new TaskModel({ ... req.body, creationDate: Date.now(), index: newIndex });
+            //save model  
+            savedTask = await task.save();
+            //return the saved task
+            res.status(200).send(savedTask);
+        }
+        catch(err) {
+            res.status(500).send({message: "Error while trying to create task"});
+        }
+                
     },
 
     //PUT API/TASK/:id
@@ -97,38 +77,17 @@ module.exports = {
     },
 
     //DELETE API/TASK/:id
-    delete: (req, res) => {
+    delete: async (req, res) => {
         const id = req.params.id;
 
-        //Find the taks we are going to delete
-        TaskModel.findById(id, (error, result) => {
-            if(error) {
-                res.status(500).send({message: "Error while trying to delete task"});
-            }
-            else {
-                //Get the index to be removed 
-                const taskIndex = result.index;
-                
-                //Decrease the following indexes
-                TaskModel.decreaseTheFollowingIndex(taskIndex,(error, result) => 
-                {
-                    if(error){
-                        res.status(500).send({message: "Error while trying to delete task"});
-                    }
-                    else{
-                        TaskModel.findByIdAndRemove(id, (error, result) => {
-                            if(error) {
-                                res.status(500).send({message: "Error while trying to delete task"});
-                            }
-                            else {
-                                res.status(200).send(result);
-                            }
-                        });
-                    }
-                }); 
-
-
-            }
-        });
+        try {
+            const currentTask = await TaskModel.findById(id);
+            await TaskModel.decreaseTheFollowingIndex(currentTask.index);
+            const result = await TaskModel.findByIdAndRemove(id);
+            res.status(200).send(result);
+        }
+        catch(err){
+            res.status(500).send({message: "Error while trying to delete task"});
+        }
     }
 }

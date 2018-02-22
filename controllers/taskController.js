@@ -3,6 +3,16 @@ module.exports = {
     
     //GET API/TASK
     getAll: (req, res) => {
+        /*
+        TaskModel.update({}, { $inc: { status: 1} },{multi: true}, (error,result) => {
+            if(error){
+                res.status(500).send({message: "Error while trying to fetch list of tasks"});
+            }
+            else {
+                res.status(200).send(result);
+            }
+        });*/
+        
         TaskModel.find({},(error,result) => {
             if(error){
                 res.status(500).send({message: "Error while trying to fetch list of tasks"});
@@ -89,12 +99,35 @@ module.exports = {
     //DELETE API/TASK/:id
     delete: (req, res) => {
         const id = req.params.id;
-        TaskModel.findByIdAndRemove(id, (error, result) => {
+
+        //Find the taks we are going to delete
+        TaskModel.findById(id, (error, result) => {
             if(error) {
                 res.status(500).send({message: "Error while trying to delete task"});
             }
             else {
-                res.status(200).send(result);
+                //Get the index to be removed 
+                const taskIndex = result.index;
+                
+                //Decrease the following indexes
+                TaskModel.decreaseTheFollowingIndex(taskIndex,(error, result) => 
+                {
+                    if(error){
+                        res.status(500).send({message: "Error while trying to delete task"});
+                    }
+                    else{
+                        TaskModel.findByIdAndRemove(id, (error, result) => {
+                            if(error) {
+                                res.status(500).send({message: "Error while trying to delete task"});
+                            }
+                            else {
+                                res.status(200).send(result);
+                            }
+                        });
+                    }
+                }); 
+
+
             }
         });
     }

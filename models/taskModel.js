@@ -23,5 +23,11 @@ ModelClass.findWithMaxIndex = function(cb) {
     return ModelClass.findOne({ status: 0 }).sort("-index").exec(cb);
 };
 
+//Update all the following indexes to decrease 1 
+// it is used for completed, delete and moves
+ModelClass.decreaseTheFollowingIndex = function(index, cb){
+    return ModelClass.update({ index: { $gt: index }}, { $inc: { index: -1 }},cb );
+}
+
 
 module.exports = ModelClass;

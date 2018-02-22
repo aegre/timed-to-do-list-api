@@ -5,7 +5,7 @@ module.exports = {
     getAll: async (req, res) => {
 
         try{
-            const tasks = await TaskModel.find({});
+            const tasks = await TaskModel.find({}, null, { sort: "index" });
             res.status(200).send(tasks);
         } 
         catch(err) {

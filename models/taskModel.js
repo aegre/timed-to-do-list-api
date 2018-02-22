@@ -25,13 +25,44 @@ ModelClass.findWithMaxIndex = () => {
 
 ModelClass.getMaxIndex = async () => {
     const maxTask = await ModelClass.findWithMaxIndex();
-    return maxTask && maxTask.index != undefined ? maxTask.index : -1;
+    return (maxTask && maxTask.index != undefined ? maxTask.index : -1);
 }
 
 //Update all the following indexes to decrease 1 
-// it is used for completed, delete and moves
+// it is used for completed, delete
 ModelClass.decreaseTheFollowingIndex = function(index){
-    return ModelClass.update({ index: { $gt: index }}, { $inc: { index: -1 }} );
+    return ModelClass.update({ index: { $gt: index }}, { $inc: { index: -1 }} , {multi: true} );
+}
+
+ModelClass.moveIndexes = function(oldIndex, newIndex){
+    let inc = {};
+    var index = {}
+    //The new index is lower, increase affected tasks
+    if(oldIndex > newIndex)
+    {
+        //move forward
+        inc = { index: 1 };
+        index =
+        { 
+            $gte: newIndex,
+            $lt: oldIndex 
+        }
+        return ModelClass.update({ index }, { $inc: inc }, { multi: true});
+    }
+    //the new index is greater, decrease the affected tasks
+    else if(newIndex > oldIndex)
+    {
+        //move backward
+        inc = { index: -1 };
+        index =
+        { 
+            $gte: oldIndex, 
+            $lte: newIndex
+        }
+        return ModelClass.update({ index }, { $inc: inc }, { multi: true});
+    }
+
+    
 }
 
 

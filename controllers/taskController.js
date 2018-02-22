@@ -65,10 +65,17 @@ module.exports = {
                 updatedProps = { ...updatedProps, finishDate: Date.now() };
                 await TaskModel.decreaseTheFollowingIndex(currentTask.index);
             }
-
+            //Changed index we have to move all the cards
+            if(updatedProps.index !== undefined && !currentTask.status)
+            {
+                console.log(updatedProps);
+                //Move the indexes in the database
+                await TaskModel.moveIndexes(currentTask.index, updatedProps.index);
+            }
+            console.log(updatedProps);
             //Find and update the model, return the updated one
             const result = await TaskModel.findByIdAndUpdate(id, updatedProps, { new: true });
-            res.status(200).send(result);   
+            res.status(200).send(result);  
         }
         catch(err){
             console.log(err);

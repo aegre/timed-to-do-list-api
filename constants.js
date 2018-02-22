@@ -1,5 +1,6 @@
-const BASE_ROUTE = "/api";
-
 module.exports = {
-    BASE_ROUTE
+    BASE_ROUTE: "/api",
+    TASK_ROUTE: "/task",
+    URL_PARAM_ID: "/:id",
+    DUMMY_ROUTE: "/generate-dummy-data"
 }

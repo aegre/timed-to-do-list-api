@@ -1,4 +1,4 @@
-const TaskModel = require("../models/TaskModel");
+const TaskModel = require('./../models/taskModel');
 const randomNumberHelper = require("../helpers/randomNumber");
 
 module.exports = {

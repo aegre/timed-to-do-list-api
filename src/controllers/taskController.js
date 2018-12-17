@@ -1,4 +1,5 @@
-const TaskModel = require("../models/TaskModel");
+const TaskModel = require('./../models/taskModel');
+
 module.exports = {
     
     //GET API/TASK
